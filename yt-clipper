@@ -1,0 +1,92 @@
+#!/bin/sh
+
+set -e
+
+function parse_args
+{
+  while [ "$1" != "" ]; do
+      case "$1" in
+          -u | --url )                  video_url="$2";          shift;;
+          -s | --start )                start_time="$2";         shift;;
+          -e | --end )                  end_time="$2";           shift;;
+          -d | --duration )             duration="$2";           shift;;
+          -o | --output )               output="$2";             shift;;
+          -f | --format )               format="$2";             shift;;
+          -ff | --ffmpeg-bin )          ffmpeg_bin="$2";         shift;;
+          -y | --ytdl-bin )             ytdl_bin="$2";           shift;;
+          -h | --help )                 usage;                   exit;;
+      esac
+      shift
+  done
+
+  # set defaults
+  if [[ -z "$format" ]]; then
+      # Note that this has to be a format where video and audio are already merged or you get two streams
+      format="b"; # b = best without warning
+  fi
+
+  if [[ -z "$ffmpeg_bin" ]]; then
+      ffmpeg_bin="ffmpeg";
+  fi
+
+  if [[ -z "$ytdl_bin" ]]; then
+      ytdl_bin="yt-dlp";
+  fi
+  
+  # Argument validation
+  if [[ -z "${video_url}" || -z "${start_time}" || -z "$output" ]]; then
+      echo "Error: Not all required arguments were specified."
+      usage
+      exit;
+  fi
+
+  if [[ -z "${end_time}" && -z "${duration}" ]]; then
+      echo "Error: Specify end time or duration."
+      usage
+      exit;
+  fi
+
+  if [[ ! -z "${end_time}" && ! -z "${duration}" ]]; then
+      echo "Error: Specify either end time or duration, but not both at the same time."
+      usage
+      exit;
+  fi
+}
+
+function usage
+{
+    echo "usage: yt-clipper -u VIDEO_URL -s HH:MM:SS {-e HH:MM:SS | -d TIME} -o PATH [-f FORMAT | -ff PATH | -y PATH | -h]"
+    echo "   ";
+    echo "  -u  | --url              : URL of the video to clip";
+    echo "  -s  | --start            : Time to begin clipping from [HH:MM:SS]";
+    echo "  -e  | --end              : Time to end the clip [HH:MM:SS]";
+    echo "  -d  | --duration         : Time in seconds to end the clip instead of timecode";
+    echo "  -o  | --output           : Path to output the clip to";
+    echo "  -f  | --format           : Format string for youtube-dl [$format]";
+    echo "  -y  | --ytdl-bin         : Specify youtube-dl binary [$ytdl_bin]";
+    echo "  -ff | --ffmpeg-bin       : Specify ffmpeg binary [$ffmpeg_bin]";
+    echo "  -h  | --help             : Shows this message";
+}
+
+function run
+{
+  parse_args "$@"
+
+  cmd_start="$ffmpeg_bin -ss $start_time"
+  
+  if [[ ! -z "$end_time" ]]; then
+      cmd_middle="-to $end_time"
+  else
+      cmd_middle="-t $duration"
+  fi
+
+  cmd_end="-i $($ytdl_bin -f $format -g $video_url) -c copy $output"
+
+  cmd_final="$cmd_start $cmd_middle $cmd_end"
+
+  $cmd_final
+}
+
+
+
+run "$@";
