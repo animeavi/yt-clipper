@@ -23,10 +23,11 @@ If you dont want to install Linux just for this (understandable), use https://ww
 
 Under the "MSYS2 MinGW x64" shell
 * `pacman -Syu`
-* `pacman -S mingw-w64-x86_64-ffmpeg`
 * `pacman -S mingw-w64-x86_64-gcc`
 * `pacman -S mingw-w64-x86_64-python-pip`
 * `pip install yt-dlp`
+
+The ffmpeg provided in the msys2 seems to be broken (does not respect duration and end switches), as a workaround get an ffmpeg build for Windows from https://www.gyan.dev/ffmpeg/builds, place it in your MSYS home folder and add `-ff ~/ffmpeg.exe` at the end of your command.
 
 Then you should be all set to use the script, you only need to do this once.
 
