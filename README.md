@@ -20,3 +20,14 @@ usage: yt-clipper -u VIDEO_URL -s HH:MM:SS {-e HH:MM:SS | -d TIME} -o PATH [-f F
 ### Windows users
 
 If you dont want to install Linux just for this (understandable), use https://www.msys2.org/
+
+Under the "MSYS2 MinGW x64" shell
+* `pacman -Syu`
+* `pacman -S mingw-w64-x86_64-ffmpeg`
+* `pacman -S mingw-w64-x86_64-gcc`
+* `pacman -S mingw-w64-x86_64-python-pip`
+* `pip install yt-dlp`
+
+Then you should be all set to use the script, you only need to do this once.
+
+In the future you may need `pip install yt-dlp --upgrade` if/when it breaks.
