@@ -16,3 +16,7 @@ usage: yt-clipper -u VIDEO_URL -s HH:MM:SS {-e HH:MM:SS | -d TIME} -o PATH [-f F
   -h  | --help             : Shows this message
 
 ```
+
+### Windows users
+
+If you dont want to install Linux just for this (understandable), use https://www.msys2.org/
